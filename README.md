@@ -43,10 +43,10 @@ terraform apply
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```
 
-3. Renamed the resource "pet" to "animal":
+3. Renamed the resource "pet" to "animal" inside /modules/main.tf:
 ```
-module "tf" {
-  source = "./module"
+resource "random_pet" "animal" {
+  length = 10
 
 }
 ```
