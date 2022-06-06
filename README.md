@@ -2,7 +2,7 @@
 
 This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes renamed random_pet resource in a module called `tf`.
 
-The use case can be helpful when you decide to rename your resource inside your module and want sustain compatibility with the versions containing the old name.
+The use case can be helpful when you decide to rename your resource inside your module and want to sustain compatibility with the versions containing the old name.
 
 # Prerequisite
 You need to have [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) installed on you workstation. 
