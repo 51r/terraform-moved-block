@@ -1,6 +1,6 @@
 # Terraform Moved Block sample
 
-This repo contains Terraform Configuration that contains [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes moved random_pet resource in a child module.
+This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes moved random_pet resource in a child module.
 
 # Prerequisite
 You need to have [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) installed on you workstation. 
