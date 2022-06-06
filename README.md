@@ -1,6 +1,8 @@
 # Terraform Moved Block sample
 
-This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes moved random_pet resource in a child module.
+This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes renamed random_pet module.
+
+The use case can be helpful when you decide to rename your module and sustain compatibility with old versions of the plan.
 
 # Prerequisite
 You need to have [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) installed on you workstation. 
@@ -33,33 +35,28 @@ terraform apply
 
 # What have been made
 
-1. Created main.tf configuration containing 2 resources:
-* resource "random_pet" "pet"
-* resource "null_resource" "hello" {
+1. Created main.tf configuration containing 2 blocks:
+* module "random_pet" "random"
+* resource "random_pet" "pet1" {
 
 2. Executed the Terraform plan and deployed the 2 resources.
 ```
 Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
 ```
 
-3. Moved the resource random_pet.pet to sub module "module":
+3. Renamed the module random_pet to "tf":
 ```
-module "pet" {
+module "tf" {
   source = "./module"
 
 }
 ```
 
-4. Modified the `null_resource` meta argument `command` to match the new var from random_pet resource, which has to be printed:
-```
-    command = "echo Hello ${module.pet.id}"
-```
-
-5. Added `moved` block inside the main.tf to let Terraform know that the resource has been moved and it doesn't need to destroy or create a new resource:
+5. Added `moved` block inside the main.tf to let Terraform know that the resource has been renamed and it doesn't need to destroy or create a new resource:
 ```
 moved {
-    from = random_pet.pet
-    to = module.pet.random_pet.pet
+    from = module.random.random_pet.pet
+    to = module.tf.random_pet.pet
 }
 ```
 
@@ -69,7 +66,6 @@ terraform init
 ```
 
 7. Applied the new plan:
-<img width="909" alt="Screen Shot 2022-06-06 at 10 52 56 AM" src="https://user-images.githubusercontent.com/52199951/172119237-261d0c64-287a-4a2d-80ce-48f1c730e368.png">
+<img width="912" alt="Screen Shot 2022-06-06 at 11 15 47 AM" src="https://user-images.githubusercontent.com/52199951/172123084-c17fff40-00b2-409d-b7ce-83ecf530c41d.png">
 
-
-**As you can see from the screenshoht above, Terraform wanted to modify the state and save the moved resource and it doesn't need to add/destroy or change the resources.**
+**As you can see from the screenshot above, Terraform wanted to modify the state and save the new module name without the need to add/destroy or change the resources.**
