@@ -50,7 +50,7 @@ module "pet" {
 }
 ```
 
-4. Modified the `null_resource` to match the new var from random_pet resource, which has to be printed:
+4. Modified the `null_resource` meta argument `command` to match the new var from random_pet resource, which has to be printed:
 ```
     command = "echo Hello ${module.pet.id}"
 ```
