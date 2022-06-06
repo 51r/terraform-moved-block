@@ -38,7 +38,7 @@ terraform apply
 1. Created main.tf configuration containing 1 module block:
 * module "random_pet" called "pet"
 
-2. Executed the Terraform plan and deployed the 2 resources.
+2. Executed the Terraform plan and deployed the resource.
 ```
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```
