@@ -1,8 +1,8 @@
 # Terraform Moved Block sample
 
-This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes renamed random_pet module.
+This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes renamed random_pet resource in a module called `tf`.
 
-The use case can be helpful when you decide to rename your module and sustain compatibility with old versions of the plan.
+The use case can be helpful when you decide to rename your resource inside your module and want sustain compatibility with the versions containing the old name.
 
 # Prerequisite
 You need to have [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) installed on you workstation. 
@@ -35,16 +35,15 @@ terraform apply
 
 # What have been made
 
-1. Created main.tf configuration containing 2 blocks:
-* module "random_pet" "random"
-* resource "random_pet" "pet1" {
+1. Created main.tf configuration containing 1 module block:
+* module "random_pet" called "pet"
 
 2. Executed the Terraform plan and deployed the 2 resources.
 ```
-Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```
 
-3. Renamed the module random_pet to "tf":
+3. Renamed the resource "pet" to "animal":
 ```
 module "tf" {
   source = "./module"
@@ -55,8 +54,8 @@ module "tf" {
 5. Added `moved` block inside the main.tf to let Terraform know that the resource has been renamed and it doesn't need to destroy or create a new resource:
 ```
 moved {
-    from = module.random.random_pet.pet
-    to = module.tf.random_pet.pet
+    from = module.tf.random_pet.pet
+    to = module.tf.random_pet.animal
 }
 ```
 
@@ -66,6 +65,6 @@ terraform init
 ```
 
 7. Applied the new plan:
-<img width="912" alt="Screen Shot 2022-06-06 at 11 15 47 AM" src="https://user-images.githubusercontent.com/52199951/172123084-c17fff40-00b2-409d-b7ce-83ecf530c41d.png">
+<img width="919" alt="Screen Shot 2022-06-06 at 11 26 15 AM" src="https://user-images.githubusercontent.com/52199951/172124718-62d1f96d-1a9b-419f-b45f-beba60a69d12.png">
 
-**As you can see from the screenshot above, Terraform wanted to modify the state and save the new module name without the need to add/destroy or change the resources.**
+**As you can see from the screenshot above, Terraform wanted to modify the state and save the new resource name without the need to add/destroy or change the resources.**
