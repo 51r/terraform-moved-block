@@ -1,16 +1,15 @@
 moved {
-    from = random_pet.pet
-    to = module.pet.random_pet.pet
+    from = module.random.random_pet.pet
+    to = module.tf.random_pet.pet
 }
 
-module "pet" {
+
+module "tf" {
   source = "./module"
 
 }
 
 
-resource "null_resource" "hello" {
-  provisioner "local-exec" {
-    command = "echo Hello ${module.pet.id}"
-  }
+resource "random_pet" "pet1" {
+    length = 2
 }
