@@ -1,8 +1,8 @@
 # Terraform Moved Block sample
 
-This repo contains Terraform Configuration that includes [Moved](https://learn.hashicorp.com/tutorials/terraform/move-config#move-your-resources-with-the-moved-configuration-block) block that describes renamed random_pet resource in a module called `tf`.
+This repo contains code that it's calling different versions of Terraform Module.
 
-The use case can be helpful when you decide to rename your resource inside your module and want to sustain compatibility with the versions containing the old name.
+It is used to describe the moved Terraform block functionality.
 
 # Prerequisite
 You need to have [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli) installed on you workstation. 
@@ -33,38 +33,96 @@ terraform plan
 terraform apply
 ```
 
-# What have been made
+# How to update to the latest module version which has different resource name
 
-1. Created main.tf configuration containing 1 module block:
-* module "random_pet" called "pet"
+1. Modify the code to use version v.0.2.0, the plan would like to destroy your current existing resources, as the resource inside the module has different name:
 
-2. Executed the Terraform plan and deployed the resource.
+* main.tf code:
 ```
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-```
-
-3. Renamed the resource "pet" to "animal" inside /modules/main.tf:
-```
-resource "random_pet" "animal" {
-  length = 10
+module "tf" {
+  source = "git::https://github.com/51r/tf-sample-module.git?ref=v0.2.0"
 
 }
 ```
-
-5. Added `moved` block inside the main.tf to let Terraform know that the resource has been renamed and it doesn't need to destroy or create a new resource:
-```
-moved {
-    from = module.tf.random_pet.pet
-    to = module.tf.random_pet.animal
-}
-```
-
-6. Re-initalized the Terraform to load the new module:
+* Initialize the Terraform again to download v0.2.0:
 ```
 terraform init
 ```
 
-7. Applied the new plan:
-<img width="919" alt="Screen Shot 2022-06-06 at 11 26 15 AM" src="https://user-images.githubusercontent.com/52199951/172124718-62d1f96d-1a9b-419f-b45f-beba60a69d12.png">
+* Apply the plan again:
+```
+terraform apply
+module.tf.random_pet.pet: Refreshing state... [id=legally-joint-dogfish]
 
-**As you can see from the screenshot above, Terraform wanted to modify the state and save the new resource name without the need to add/destroy or change the resources.**
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the
+following symbols:
+  + create
+  - destroy
+
+Terraform will perform the following actions:
+
+  # module.tf.random_pet.animal will be created
+  + resource "random_pet" "animal" {
+      + id        = (known after apply)
+      + length    = 3
+      + separator = "-"
+    }
+
+  # module.tf.random_pet.pet will be destroyed
+  # (because random_pet.pet is not in configuration)
+  - resource "random_pet" "pet" {
+      - id        = "legally-joint-dogfish" -> null
+      - length    = 3 -> null
+      - separator = "-" -> null
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+```
+
+**As you can see from the printed plan above, Terraform wants to destroy and re-create the resource, as it's name was changed.**
+
+2. I have created patch in v0.2.1 which includes [moved](https://www.terraform.io/language/modules/develop/refactoring#moved-block-syntax) block. Change your Terraform module to use v0.2.1:
+```
+module "tf" {
+  source = "git::https://github.com/51r/tf-sample-module.git?ref=v0.2.1"
+
+}
+```
+
+* Initialize the Terraform again to download the v.0.2.1 from the GitHub Repo:
+```
+terraform init
+```
+
+* Execute the plan:
+```
+± terraform apply
+module.tf.random_pet.animal: Refreshing state... [id=legally-joint-dogfish]
+
+Terraform will perform the following actions:
+
+  # module.tf.random_pet.pet has moved to module.tf.random_pet.animal
+    resource "random_pet" "animal" {
+        id        = "legally-joint-dogfish"
+        # (2 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+```
+
+**This is a simple how to use the moved block inside Terraform configuration. You can check the source code at my other repo [releases](https://github.com/51r/tf-sample-module/releases)**
+
+Agenda of the module:
+
+* v0.1.0 - Initial commit with resource name "pet"
+* v0.2.0 - Second version with resource name "animal"
+* v0.2.1 - Patch of second version with resource name "animal" and "moved" block
